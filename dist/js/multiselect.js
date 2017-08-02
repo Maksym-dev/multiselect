@@ -130,6 +130,8 @@ if (typeof jQuery === 'undefined') {
 
                 // Initialize events
                 self.events();
+                //Initialize buttons statuses
+                self.initButtonStatus();
             },
 
             events: function() {
@@ -229,6 +231,28 @@ if (typeof jQuery === 'undefined') {
                     }
                 });
 
+                // Attach event for enabling select button by choosing options from right side
+                self.$right.on('change', function(e) {
+                        e.preventDefault();
+
+                        var $options = self.$right.find('option:selected');
+
+                        if ( $options.length ) {
+                            self.actions.$leftSelected.prop("disabled", false);
+                        }
+                });
+
+                // Attach event for enabling select button by choosing options from left side
+                self.$left.on('change', function(e) {
+                        e.preventDefault();
+
+                        var $options = self.$left.find('option:selected');
+
+                        if ( $options.length ) {
+                            self.actions.$rightSelected.prop("disabled", false);
+                        }
+                });
+
                 // dblclick support for IE
                 if ( navigator.userAgent.match(/MSIE/i)  || navigator.userAgent.indexOf('Trident/') > 0 || navigator.userAgent.indexOf('Edge/') > 0) {
                     self.$left.dblclick(function(e) {
@@ -250,6 +274,15 @@ if (typeof jQuery === 'undefined') {
                     }
 
                     $(this).blur();
+                    $(this).prop("disabled", true);
+
+                    var $optionsLeft = self.$left.find('option');
+
+                    if ( $optionsLeft.length == 0 ) {
+                        self.actions.$rightAll.prop("disabled", true);
+                    }
+
+                    self.actions.$leftAll.prop("disabled", false);
                 });
 
                 self.actions.$leftSelected.on('click', function(e) {
@@ -262,6 +295,15 @@ if (typeof jQuery === 'undefined') {
                     }
 
                     $(this).blur();
+                    $(this).prop("disabled", true);
+
+                    var $optionsRight = self.$right.find('option');
+
+                    if ( $optionsRight.length == 0 ) {
+                        self.actions.$leftAll.prop("disabled", true);
+                    }
+
+                    self.actions.$rightAll.prop("disabled", false);
                 });
 
                 self.actions.$rightAll.on('click', function(e) {
@@ -274,6 +316,10 @@ if (typeof jQuery === 'undefined') {
                     }
 
                     $(this).blur();
+                    $(this).prop("disabled", true);
+                    self.actions.$leftSelected.prop("disabled", true);
+                    self.actions.$rightSelected.prop("disabled", true);
+                    self.actions.$leftAll.prop("disabled", false);
                 });
 
                 self.actions.$leftAll.on('click', function(e) {
@@ -286,6 +332,10 @@ if (typeof jQuery === 'undefined') {
                     }
 
                     $(this).blur();
+                    $(this).prop("disabled", true);
+                    self.actions.$leftSelected.prop("disabled", true);
+                    self.actions.$rightSelected.prop("disabled", true);
+                    self.actions.$rightAll.prop("disabled", false);
                 });
 
                 self.actions.$undo.on('click', function(e) {
@@ -489,6 +539,33 @@ if (typeof jQuery === 'undefined') {
                             self.moveToRight(last[1], event, false, true);
                             break;
                     }
+                }
+            },
+
+            initButtonStatus: function() {
+                var self = this;
+                //Setup statuses for '*_selected' buttons
+                var $rightOptionsSelected = self.$right.find('option:selected');
+                var $leftOptionsSelected = self.$left.find('option:selected');
+
+                if ( $rightOptionsSelected.length == 0 ) {
+                    self.actions.$leftSelected.prop("disabled", true);
+                }
+
+                if ( $leftOptionsSelected.length == 0 ) {
+                    self.actions.$rightSelected.prop("disabled", true);
+                }
+
+                //Setup statuses for '*_all' buttons
+                var $rightOptions = self.$right.find('option');
+                var $leftOptions = self.$left.find('option');
+
+                if ( $rightOptions.length == 0 ) {
+                    self.actions.$leftAll.prop("disabled", true);
+                }
+
+                if ( $leftOptions.length == 0 ) {
+                    self.actions.$rightAll.prop("disabled", true);
                 }
             }
         }
