@@ -72,10 +72,11 @@ if (typeof jQuery === 'undefined') {
                 submitAllRight:     settings.submitAllRight !== undefined ? settings.submitAllRight : true,
                 search:             settings.search,
                 ignoreDisabled:     settings.ignoreDisabled !== undefined ? settings.ignoreDisabled : false,
-                matchOptgroupBy:    settings.matchOptgroupBy !== undefined ? settings.matchOptgroupBy : 'label'
+                matchOptgroupBy:    settings.matchOptgroupBy !== undefined ? settings.matchOptgroupBy : 'label',
+                doubleClickEnabled: settings.doubleClickEnabled !== undefined ? settings.doubleClickEnabled : false
             };
 
-            delete settings.keepRenderingSort, settings.submitAllLeft, settings.submitAllRight, settings.search, settings.ignoreDisabled, settings.matchOptgroupBy;
+            delete settings.keepRenderingSort, settings.submitAllLeft, settings.submitAllRight, settings.search, settings.ignoreDisabled, settings.matchOptgroupBy, settings.doubleClickEnabled;
 
             this.callbacks = settings;
 
@@ -183,16 +184,40 @@ if (typeof jQuery === 'undefined') {
                     self.$right.find('option').prop('selected', self.options.submitAllRight);
                 });
 
-                // Attach event for double clicking on options from left side
-                self.$left.on('dblclick', 'option', function(e) {
-                    e.preventDefault();
+                if(self.options.doubleClickEnabled) {
+                    // Attach event for double clicking on options from left side
+                    self.$left.on('dblclick', 'option', function(e) {
+                        e.preventDefault();
 
-                    var $options = self.$left.find('option:selected');
+                        var $options = self.$left.find('option:selected');
 
-                    if ( $options.length ) {
-                        self.moveToRight($options, e);
+                        if ( $options.length ) {
+                            self.moveToRight($options, e);
+                        }
+                    });
+
+                    // Attach event for double clicking on options from right side
+                    self.$right.on('dblclick', 'option', function(e) {
+                        e.preventDefault();
+
+                        var $options = self.$right.find('option:selected');
+
+                        if ( $options.length ) {
+                            self.moveToLeft($options, e);
+                        }
+                    });
+
+                    // dblclick support for IE
+                    if ( navigator.userAgent.match(/MSIE/i)  || navigator.userAgent.indexOf('Trident/') > 0 || navigator.userAgent.indexOf('Edge/') > 0) {
+                        self.$left.dblclick(function(e) {
+                            self.actions.$rightSelected.trigger('click');
+                        });
+
+                        self.$right.dblclick(function(e) {
+                            self.actions.$leftSelected.trigger('click');
+                        });
                     }
-                });
+                }
                 
                 // Attach event for pushing ENTER on options from left side
                 self.$left.on('keypress', function(e) {
@@ -204,17 +229,6 @@ if (typeof jQuery === 'undefined') {
                         if ( $options.length ) {
                             self.moveToRight($options, e);
                         }
-                    }
-                });
-
-                // Attach event for double clicking on options from right side
-                self.$right.on('dblclick', 'option', function(e) {
-                    e.preventDefault();
-
-                    var $options = self.$right.find('option:selected');
-
-                    if ( $options.length ) {
-                        self.moveToLeft($options, e);
                     }
                 });
 
@@ -252,17 +266,6 @@ if (typeof jQuery === 'undefined') {
                             self.actions.$rightSelected.prop("disabled", false);
                         }
                 });
-
-                // dblclick support for IE
-                if ( navigator.userAgent.match(/MSIE/i)  || navigator.userAgent.indexOf('Trident/') > 0 || navigator.userAgent.indexOf('Edge/') > 0) {
-                    self.$left.dblclick(function(e) {
-                        self.actions.$rightSelected.trigger('click');
-                    });
-
-                    self.$right.dblclick(function(e) {
-                        self.actions.$leftSelected.trigger('click');
-                    });
-                }
 
                 self.actions.$rightSelected.on('click', function(e) {
                     e.preventDefault();
