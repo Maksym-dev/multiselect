@@ -470,7 +470,9 @@ if (typeof jQuery === 'undefined') {
 
                         $sourceGroup.removeIfEmpty();
                     } else {
-                        $destination.move($option);
+                        if(!$option.hasClass('hidden')) {
+                            $destination.move($option);
+                        }
                     }
                 });
 
