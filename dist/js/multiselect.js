@@ -811,6 +811,11 @@ if (typeof jQuery === 'undefined') {
         return this;
     };
 
+   // return all options from select
+    $.fn.mValue = function() {
+        return this.find('option').map(function() { return $(this).val(); }).get();
+    };
+
     // attach index to children
     $.fn.attachIndex = function() {
         this.children().each(function(index, option) {
