@@ -271,42 +271,85 @@ if (typeof jQuery === 'undefined') {
                     e.preventDefault();
 
                     var $options = self.$left.find('option:selected');
+                    var $allOptions = self.$left.find('option');
+                    var indexNextSelectedOption = 0;
+                    var selectLastFlag = false;
+                    if ( $options.length ) {
+                        indexNextSelectedOption = $allOptions.index($options[$options.length - 1]) + 1;
+                    }
+                    var lastElementIndex = $allOptions.length - 1;
+                    if (indexNextSelectedOption >= lastElementIndex) {
+                        indexNextSelectedOption = lastElementIndex - $options.length;
+                        selectLastFlag = true;
+                    }
+                    var $optionNextSelected = $($allOptions.get(indexNextSelectedOption));
 
                     if ( $options.length ) {
                         self.moveToRight($options, e);
                     }
 
+                    if (selectLastFlag) {
+                        $(self.$left.find('option').get(indexNextSelectedOption)).prop('selected', true);
+                    } else {
+                        $optionNextSelected.prop('selected', true);
+                    }
+
                     $(this).blur();
-                    $(this).prop("disabled", true);
 
                     var $optionsLeft = self.$left.find('option');
+                    var $optionsRight = self.$right.find('option');
 
                     if ( $optionsLeft.length == 0 ) {
                         self.actions.$rightAll.prop("disabled", true);
+                        $(this).prop("disabled", true);
                     }
 
-                    self.actions.$leftAll.prop("disabled", false);
+                    if( $optionsRight.length != 0 ) {
+                        self.actions.$leftAll.prop("disabled", false);
+                    }
                 });
 
                 self.actions.$leftSelected.on('click', function(e) {
                     e.preventDefault();
 
                     var $options = self.$right.find('option:selected');
+                    var $allOptions = self.$right.find('option');
+                    var indexNextSelectedElement = 0;
+                    var selectLastFlag = false;
+                    if ( $options.length ) {
+                        indexNextSelectedElement = $allOptions.index($options[$options.length - 1]) + 1;
+                    }
+
+                    var lastElementIndex = $allOptions.length - 1;
+                    if (indexNextSelectedElement >= lastElementIndex) {
+                        indexNextSelectedElement = lastElementIndex - $options.length;
+                        selectLastFlag = true;
+                    }
+                    var $optionNextSelected = $($allOptions.get(indexNextSelectedElement));
 
                     if ( $options.length ) {
                         self.moveToLeft($options, e);
                     }
 
+                    if (selectLastFlag) {
+                        $(self.$right.find('option').get(indexNextSelectedElement)).prop('selected', true);
+                    } else {
+                        $optionNextSelected.prop('selected', true);
+                    }
+
                     $(this).blur();
-                    $(this).prop("disabled", true);
 
                     var $optionsRight = self.$right.find('option');
+                    var $optionsLeft = self.$left.find('option');
 
                     if ( $optionsRight.length == 0 ) {
                         self.actions.$leftAll.prop("disabled", true);
+                        $(this).prop("disabled", true);
                     }
 
-                    self.actions.$rightAll.prop("disabled", false);
+                    if ( $optionsLeft.length != 0 ) {
+                        self.actions.$rightAll.prop("disabled", false);
+                    }
                 });
 
                 self.actions.$rightAll.on('click', function(e) {
