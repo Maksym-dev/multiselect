@@ -824,6 +824,7 @@ if (typeof jQuery === 'undefined') {
     };
 
     $.fn.mHide = function() {
+        this.prop('selected', false);
         this.addClass('hidden').hide();
 
         if (isIE || isSafari) {
